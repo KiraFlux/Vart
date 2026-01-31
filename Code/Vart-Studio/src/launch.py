@@ -7,7 +7,7 @@ from application.vart import VARTApplication
 
 
 def _launch():
-    _home_path = r"D:\Projects\VART\Code\Vart-Studio"
+    _home_path = r"/home/kiraflux/Repos/Vart/Code/Vart-Studio"
     app = VARTApplication(Path(_home_path))
 
     app.run("VART-Studio", (1280, 720))
