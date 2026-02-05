@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, ClassVar, Iterable, MutableMapping, MutableSequence, Sequence
 
-from vart.misc.subject import Subject
+from kf_dpg.misc.subject import Subject
 
 
 class Logger:
@@ -42,12 +42,12 @@ class Logger:
         self.on_write.notify(None)
 
     @classmethod
-    def getKeys(cls) -> Sequence[str]:
+    def get_keys(cls) -> Sequence[str]:
         """Получить все доступные ключи журнала"""
         return tuple(cls._logs.keys())
 
     @classmethod
-    def getByFilter(cls, keys: Sequence[str]) -> Iterable[str]:
+    def get_by_filter(cls, keys: Sequence[str]) -> Iterable[str]:
         """Получить логи"""
 
         if len(keys) == 0:

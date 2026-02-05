@@ -1,5 +1,5 @@
 import vart.boot
-from vart.detail.mesh import MeshRegistry
+from vart.detail.mesh import MeshRegistry, Mesh2D
 
 vart.boot.attach_libs()
 
@@ -12,6 +12,8 @@ from vart.ui.views.prepare import PreparingView
 
 def _launch():
     mesh_registry = MeshRegistry()
+
+    mesh_registry.add(Mesh2D((), (), name="Test"))
 
     app = VartApplication(
         Window(),

@@ -44,10 +44,10 @@ class JornalView(CustomWidget):
             )
         )
 
-        Logger.on_write.addListener(lambda _: self._onMessage())
-        Logger.on_create.addListener(self._createLogWidget)
+        Logger.on_write.add_listener(lambda _: self._onMessage())
+        Logger.on_create.add_listener(self._createLogWidget)
 
-        for key in Logger.getKeys():
+        for key in Logger.get_keys():
             self._createLogWidget(key)
 
     def _createLogWidget(self, key: str) -> None:
@@ -55,8 +55,8 @@ class JornalView(CustomWidget):
             CheckBox(
                 _value=False,
             )
-            .withLabel(key)
-            .withHandler(
+            .with_label(key)
+            .with_handler(
                 lambda state: self._onKeyWidget(key, state)
             )
         )
@@ -71,4 +71,4 @@ class JornalView(CustomWidget):
         self._onMessage()
 
     def _onMessage(self) -> None:
-        self._text.setValue('\n'.join(Logger.getByFilter(tuple(self._active_channels))))
+        self._text.set_value('\n'.join(Logger.get_by_filter(tuple(self._active_channels))))
