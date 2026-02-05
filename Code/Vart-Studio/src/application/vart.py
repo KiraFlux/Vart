@@ -82,7 +82,8 @@ class VARTApplication(Application):
         with open(output_path, "wb") as bytecode_stream:
             trajectories = self._figure_registry.getTrajectories()
 
-            result = self._bytecode_writer.run(trajectories, bytecode_stream)
+            with open(Path(output_path).with_suffix(".txt"), "wt") as ir_stream:
+                result = self._bytecode_writer.run(ir_stream, trajectories, bytecode_stream)
 
             self._logger.write(result.getMessage())
 

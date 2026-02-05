@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import BinaryIO
+from typing import BinaryIO, TextIO
 from typing import Iterable
 
 from bytelang.compiler import ByteLangCompiler
@@ -19,11 +19,10 @@ class CodeWriter:
     _settings: GeneratorSettings
     _bytelang: ByteLangCompiler
 
-    def run(self, trajectories: Iterable[Trajectory], bytecode_stream: BinaryIO, log_flag: LogFlag = LogFlag.ALL) -> CompileResult:
-        stream = FixedStringIO()
-        self._processAgent(MacroAgent(LowLevelAgent(stream), self._settings, self._calcTotalStepCount(trajectories)), trajectories)
-        stream.seek(0)
-        return self._bytelang.compile(stream, bytecode_stream, log_flag)
+    def run(self, ir_output_stream: TextIO, trajectories: Iterable[Trajectory], bytecode_stream: BinaryIO, log_flag: LogFlag = LogFlag.ALL) -> CompileResult:
+        self._processAgent(MacroAgent(LowLevelAgent(ir_output_stream), self._settings, self._calcTotalStepCount(trajectories)), trajectories)
+        with open(ir_output_stream.name, "rt") as ir_input:
+            return self._bytelang.compile(ir_input, bytecode_stream, log_flag)
 
     def _processAgent(self, agent: MacroAgent, trajectories: Iterable[Trajectory]):
         agent.prologue()
