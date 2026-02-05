@@ -1,0 +1,3 @@
+[submodule "Code/Vart-Studio-Remastered/lib/KiraFlux-DearPyGui"]
+	path = Code/Vart-Studio-Remastered/lib/KiraFlux-DearPyGui
+	url = https://github.com/KiraFlux/KiraFlux-DearPyGui.git

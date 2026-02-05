@@ -1,0 +1,250 @@
+# ----------------------------<<< Prologue - Begin >>>---------------------------- #
+.env vart_esp32
+# Note: Prologue - End
+# Note: Trajectory : 'sphere' Begin
+# ------------------------<<< Set Profile: Перемещение >>>------------------------ #
+set_speed 200
+set_accel 75
+set_planner_mode 2
+# ------------------------------<<< Set Tool: 0 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 0
+delay_ms 1000
+set_position -17 60
+# Note: Progress: 1
+set_progress 1
+# ------------------------------<<< Set Tool: 1 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 1
+delay_ms 1000
+# ------------------<<< Set Profile: Продолжительный отрезок >>>------------------ #
+set_speed 150
+set_accel 50
+set_planner_mode 2
+set_position 17 60
+# Note: Progress: 2
+set_progress 2
+set_position 0 50
+# Note: Progress: 4
+set_progress 4
+set_position -17 60
+# Note: Progress: 5
+set_progress 5
+set_position -43 45
+# Note: Progress: 6
+set_progress 6
+set_position -17 60
+# Note: Progress: 8
+set_progress 8
+set_position 0 50
+# Note: Progress: 9
+set_progress 9
+set_position -43 45
+# Note: Progress: 11
+set_progress 11
+set_position -43 25
+# Note: Progress: 12
+set_progress 12
+set_position -43 45
+# Note: Progress: 13
+set_progress 13
+set_position 0 50
+# Note: Progress: 15
+set_progress 15
+set_position -43 25
+# Note: Progress: 16
+set_progress 16
+set_position -17 10
+# Note: Progress: 18
+set_progress 18
+set_position -43 25
+# Note: Progress: 19
+set_progress 19
+set_position 0 50
+# Note: Progress: 20
+set_progress 20
+set_position -17 10
+# Note: Progress: 22
+set_progress 22
+set_position 17 10
+# Note: Progress: 23
+set_progress 23
+set_position -17 10
+# Note: Progress: 25
+set_progress 25
+set_position 0 50
+# Note: Progress: 26
+set_progress 26
+set_position 17 10
+# Note: Progress: 27
+set_progress 27
+set_position 43 25
+# Note: Progress: 29
+set_progress 29
+set_position 17 10
+# Note: Progress: 30
+set_progress 30
+set_position 0 50
+# Note: Progress: 31
+set_progress 31
+set_position 43 25
+# Note: Progress: 33
+set_progress 33
+set_position 43 45
+# Note: Progress: 34
+set_progress 34
+set_position 43 25
+# Note: Progress: 36
+set_progress 36
+set_position 0 50
+# Note: Progress: 37
+set_progress 37
+set_position 43 45
+# Note: Progress: 38
+set_progress 38
+set_position 17 60
+# Note: Progress: 40
+set_progress 40
+set_position 43 45
+# Note: Progress: 41
+set_progress 41
+set_position 0 50
+# Note: Progress: 43
+set_progress 43
+set_position 17 60
+# Note: Progress: 44
+set_progress 44
+set_position 43 45
+# Note: Progress: 45
+set_progress 45
+set_position 61 14
+# Note: Progress: 47
+set_progress 47
+set_position 61 -14
+# Note: Progress: 48
+set_progress 48
+set_position 43 25
+# Note: Progress: 50
+set_progress 50
+set_position 43 45
+# Note: Progress: 51
+set_progress 51
+set_position 43 25
+# Note: Progress: 52
+set_progress 52
+set_position 61 -14
+# Note: Progress: 54
+set_progress 54
+set_position 25 -35
+# Note: Progress: 55
+set_progress 55
+set_position 17 10
+# Note: Progress: 56
+set_progress 56
+set_position 43 25
+# Note: Progress: 58
+set_progress 58
+set_position 17 10
+# Note: Progress: 59
+set_progress 59
+set_position 25 -35
+# Note: Progress: 61
+set_progress 61
+set_position -25 -35
+# Note: Progress: 62
+set_progress 62
+set_position -17 10
+# Note: Progress: 63
+set_progress 63
+set_position 17 10
+# Note: Progress: 65
+set_progress 65
+set_position -17 10
+# Note: Progress: 66
+set_progress 66
+set_position -25 -35
+# Note: Progress: 68
+set_progress 68
+set_position -61 -14
+# Note: Progress: 69
+set_progress 69
+set_position -43 25
+# Note: Progress: 70
+set_progress 70
+set_position -17 10
+# Note: Progress: 72
+set_progress 72
+set_position -43 25
+# Note: Progress: 73
+set_progress 73
+set_position -61 -14
+# Note: Progress: 75
+set_progress 75
+set_position -61 14
+# Note: Progress: 76
+set_progress 76
+set_position -43 45
+# Note: Progress: 77
+set_progress 77
+set_position -43 25
+# Note: Progress: 79
+set_progress 79
+set_position -25 -35
+# Note: Progress: 80
+set_progress 80
+set_position -17 -60
+# Note: Progress: 81
+set_progress 81
+set_position -43 -45
+# Note: Progress: 83
+set_progress 83
+set_position -61 -14
+# Note: Progress: 84
+set_progress 84
+set_position -25 -35
+# Note: Progress: 86
+set_progress 86
+set_position 25 -35
+# Note: Progress: 87
+set_progress 87
+set_position 17 -60
+# Note: Progress: 88
+set_progress 88
+set_position -17 -60
+# Note: Progress: 90
+set_progress 90
+set_position -25 -35
+# Note: Progress: 91
+set_progress 91
+set_position 25 -35
+# Note: Progress: 93
+set_progress 93
+set_position 61 -14
+# Note: Progress: 94
+set_progress 94
+set_position 43 -45
+# Note: Progress: 95
+set_progress 95
+set_position 17 -60
+# Note: Progress: 97
+set_progress 97
+set_position 25 -35
+# Note: Progress: 98
+set_progress 98
+set_position 61 -14
+# Note: Progress: 100
+set_progress 100
+# ------------------------<<< Set Profile: Перемещение >>>------------------------ #
+set_speed 200
+set_accel 75
+set_planner_mode 2
+# ------------------------------<<< Set Tool: 0 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 0
+delay_ms 1000
+# Note: Trajectory : 'sphere' End
+# ----------------------------<<< Epilogue - Begin >>>---------------------------- #
+delay_ms 1000
+set_position 0 0
+quit
+# Note: Epilogue - End

@@ -1,0 +1,55 @@
+# ----------------------------<<< Prologue - Begin >>>---------------------------- #
+.env vart_esp32
+# Note: Prologue - End
+# Note: Trajectory : 'Полигон: 0' Begin
+# ------------------------<<< Set Profile: Перемещение >>>------------------------ #
+set_speed 200
+set_accel 75
+set_planner_mode 2
+# ------------------------------<<< Set Tool: 0 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 0
+delay_ms 1000
+set_position 0 100
+# Note: Progress: 14
+set_progress 14
+# ------------------------------<<< Set Tool: 1 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 1
+delay_ms 1000
+# ------------------<<< Set Profile: Продолжительный отрезок >>>------------------ #
+set_speed 150
+set_accel 50
+set_planner_mode 2
+set_position 86 50
+# Note: Progress: 28
+set_progress 28
+set_position 86 -49
+# Note: Progress: 42
+set_progress 42
+set_position 0 -100
+# Note: Progress: 57
+set_progress 57
+set_position -86 -50
+# Note: Progress: 71
+set_progress 71
+set_position -86 50
+# Note: Progress: 85
+set_progress 85
+set_position 0 100
+# Note: Progress: 100
+set_progress 100
+# ------------------------<<< Set Profile: Перемещение >>>------------------------ #
+set_speed 200
+set_accel 75
+set_planner_mode 2
+# ------------------------------<<< Set Tool: 0 >>>------------------------------- #
+delay_ms 1000
+set_active_tool 0
+delay_ms 1000
+# Note: Trajectory : 'Полигон: 0' End
+# ----------------------------<<< Epilogue - Begin >>>---------------------------- #
+delay_ms 1000
+set_position 0 0
+quit
+# Note: Epilogue - End
