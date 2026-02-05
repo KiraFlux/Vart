@@ -1,4 +1,5 @@
 import vart.boot
+from vart.detail.mesh import MeshRegistry
 
 vart.boot.attach_libs()
 
@@ -10,10 +11,12 @@ from vart.ui.views.prepare import PreparingView
 
 
 def _launch():
+    mesh_registry = MeshRegistry()
+
     app = VartApplication(
         Window(),
         (
-            ("Подготовка", PreparingView()),
+            ("Подготовка", PreparingView(mesh_registry)),
             ("Параметры", ConfigView()),
             ("Журнал", JornalView()),
         )
