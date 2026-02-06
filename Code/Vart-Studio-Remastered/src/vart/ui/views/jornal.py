@@ -11,7 +11,7 @@ from vart.misc.log import Logger
 class JornalView(CustomWidget):
 
     def __init__(self) -> None:
-        self._text: Final = Text().withFont(Assets.log_font)
+        self._text: Final = Text().with_font(Assets.log_font)
         self._channels: Final = VBox()
         self._active_channels: Final = set[str]()
 
@@ -23,7 +23,7 @@ class JornalView(CustomWidget):
                     VBox()
                     .add(
                         Text("Каналы")
-                        .withFont(Assets.title_font)
+                        .with_font(Assets.title_font)
                     )
                     .add(
                         ChildWindow(

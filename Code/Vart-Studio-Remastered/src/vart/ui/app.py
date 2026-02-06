@@ -22,6 +22,6 @@ class VartApplication(App):
 
         super().__init__(
             window
-            .withFont(Assets.default_font)
+            .with_font(Assets.default_font)
             .add(tab_bar)
         )

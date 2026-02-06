@@ -150,5 +150,16 @@ class MeshRegistry:
         self._items.remove(mesh)
         self.on_remove.notify(mesh)
 
+    def clear(self) -> None:
+        self._log.write(f"clear")
+
+        for mesh in tuple(self._items):
+            self.remove(mesh)
+
+        self._items.clear()
+
     def get_all(self) -> Iterable[Mesh2D]:
         return self._items
+
+    def items_count(self) -> int:
+        return len(self._items)
