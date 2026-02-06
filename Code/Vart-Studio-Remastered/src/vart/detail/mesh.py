@@ -71,6 +71,7 @@ class Mesh2D:
             vertices: Sequence[vec2f],
             trajectory_start_indices: Sequence[int],
             *,
+            tool_index: int = 1,  # 0 - disable
             name: str = None,
             scale: vec2f = Vector2D(1, 1),
             rotation: float = 0,
@@ -85,6 +86,25 @@ class Mesh2D:
         self._translation = translation
 
         self._name = name or str(self)
+        self._tool_index = tool_index
+
+    @property
+    def tool_index(self):
+        """
+        Инструмент
+        0 - не участвует в печати
+        1, 2, i, ... - использовать i-й инструмент
+        """
+        return self._tool_index
+
+    def set_tool_index(self, tool_index: str):
+        if self._tool_index != tool_index:
+            self._tool_index = tool_index
+            self.on_change.notify(self)
+
+    @tool_index.setter
+    def tool_index(self, n):
+        self.set_tool_index(n)
 
     @property
     def name(self):
