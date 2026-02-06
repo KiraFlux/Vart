@@ -1,8 +1,8 @@
 import vart.boot
-from vart.detail.mesh import MeshRegistry, Mesh2D
 
 vart.boot.attach_libs()
 
+from vart.detail.mesh import MeshRegistry, Mesh2D
 from kf_dpg.impl.containers import Window
 from vart.ui.app import VartApplication
 from vart.ui.views.config import ConfigView
