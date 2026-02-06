@@ -30,13 +30,5 @@
   "i64": {
     "type": "signed",
     "size": 8
-  },
-  "f32": {
-    "type": "exponent",
-    "size": 4
-  },
-  "f64": {
-    "type": "exponent",
-    "size": 8
   }
 }
