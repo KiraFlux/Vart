@@ -7,6 +7,7 @@ from kf_dpg.etc.input2d import FloatInput2D
 from kf_dpg.impl.boxes import TextInput
 from kf_dpg.impl.buttons import Button
 from kf_dpg.impl.containers import VBox, ChildWindow, HBox
+from kf_dpg.impl.misc import Spacer
 from kf_dpg.impl.sliders import IntSlider
 from kf_dpg.impl.text import Text
 from kf_dpg.misc.color import Color
@@ -37,12 +38,26 @@ class MeshEditDialog(EditDialog):
             interval=(-10000, 10000),
         )
 
+        self._vertices_text_input = TextInput(
+            multiline=True
+        )
+
         super().__init__(
-            VBox()
-            .add(self._name)
-            .add(self._rotation)
-            .add(self._scale)
-            .add(self._translation)
+            HBox()
+            .add(
+                VBox()
+                .with_width(160)
+                .add(self._name)
+                .add(self._rotation)
+                .add(self._scale)
+                .add(self._translation)
+            )
+            .add(Spacer().with_width(100))
+            .add(
+                VBox()
+                .add(Text("Редактор траекторий"))
+                .add(self._vertices_text_input)
+            )
         )
 
     def begin(self, mesh: Mesh2D) -> None:
@@ -51,12 +66,14 @@ class MeshEditDialog(EditDialog):
         self._rotation.set_value(mesh.rotation)
         self._scale.set_value(mesh.scale)
         self._translation.set_value(mesh.translation)
+        self._vertices_text_input.set_value(mesh.to_text_repr())
 
     def apply(self, mesh: Mesh2D) -> None:
         mesh.name = self._name.get_value()
         mesh.rotation = self._rotation.get_value()
         mesh.scale = self._scale.get_value()
         mesh.translation = self._translation.get_value()
+        mesh.vertices, mesh.trajectory_start_indices = Mesh2D.from_text_repr(self._vertices_text_input.get_value())
 
 
 class MeshCard(CustomWidget):
@@ -72,16 +89,13 @@ class MeshCard(CustomWidget):
             .with_height(80)
             .add(
                 VBox()
+                .add(self._name)
                 .add(
                     HBox()
                     .add(
                         edit_dialog_button
                         .with_label("···")
                     )
-                    .add(self._name)
-                )
-                .add(
-                    HBox()
                     .add(
                         mesh_delete_button
                         .with_label(" x ")

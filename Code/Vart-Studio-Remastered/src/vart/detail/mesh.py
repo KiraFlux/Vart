@@ -12,10 +12,64 @@ class Mesh2D:
 
     type vec2f = Vector2D[float]
 
+    @classmethod
+    def from_text_repr(cls, text: str) -> tuple[Sequence[vec2f], Sequence[int]]:
+        vertices = list[Vector2D[float]]()
+        indices = list[int]()
+
+        in_trajectory = False
+        vertex_index = 0
+
+        for line in text.splitlines():
+            line = line.strip()
+
+            if line:
+                if not in_trajectory:
+                    indices.append(vertex_index)
+
+                parts = line.split()
+                if len(parts) == 2:
+                    x, y = map(float, parts)
+                    vertices.append(Vector2D(x, y))
+                    vertex_index += 1
+                    in_trajectory = True
+
+            else:
+                in_trajectory = False
+
+        return vertices, indices
+
+    def to_text_repr(self) -> str:
+        """
+        Преобразовать меш в текстовое представление
+        Формат: вершины по строкам, траектории разделяются пустыми строками
+        """
+        if not self._vertices:
+            return ""
+
+        lines = []
+        indices = sorted(set(self._trajectory_start_indices))
+
+        for i in range(len(indices)):
+            start = indices[i]
+            end = indices[i + 1] if i + 1 < len(indices) else len(self._vertices)
+
+            for j in range(start, end):
+                vertex = self._vertices[j]
+                lines.append(f"{vertex.x} {vertex.y}")
+
+            if i < len(indices) - 1:
+                lines.append("")
+
+        if lines and lines[-1] == "":
+            lines.pop()
+
+        return "\n".join(lines)
+
     def __init__(
             self,
             vertices: Sequence[vec2f],
-            trajectory_end_indices: Sequence[int],
+            trajectory_start_indices: Sequence[int],
             *,
             name: str = None,
             scale: vec2f = Vector2D(1, 1),
@@ -24,13 +78,13 @@ class Mesh2D:
     ) -> None:
         self.on_change: Final[Subject[Mesh2D]] = Subject()
         self._vertices = vertices
-        self._trajectory_end_indices = trajectory_end_indices
+        self._trajectory_start_indices = trajectory_start_indices
 
         self._rotation = rotation
         self._scale = scale
         self._translation = translation
 
-        self._name = name or repr(self)
+        self._name = name or str(self)
 
     @property
     def name(self):
@@ -61,18 +115,18 @@ class Mesh2D:
         self.set_vertices(v)
 
     @property
-    def trajectory_end_indices(self):
-        """Индексы конечных вершин траекторий"""
-        return self._trajectory_end_indices
+    def trajectory_start_indices(self):
+        """Индексы начальных вершин траекторий"""
+        return self._trajectory_start_indices
 
-    def set_trajectory_end_indices(self, indices: Sequence[int]):
-        if self._trajectory_end_indices != indices:
-            self._trajectory_end_indices = indices
+    def set_trajectory_start_indices(self, indices: Sequence[int]):
+        if self._trajectory_start_indices != indices:
+            self._trajectory_start_indices = indices
             self.on_change.notify(self)
 
-    @trajectory_end_indices.setter
-    def trajectory_end_indices(self, i):
-        self.set_trajectory_end_indices(i)
+    @trajectory_start_indices.setter
+    def trajectory_start_indices(self, i):
+        self.set_trajectory_start_indices(i)
 
     @property
     def rotation(self):
@@ -116,11 +170,14 @@ class Mesh2D:
     def scale(self, x):
         self.set_scale(x)
 
+    def __str__(self):
+        return f"<{self.__class__.__name__}@{id(self)}>"
+
     def __repr__(self):
         return (
                 f"<{self.__class__.__name__}@{id(self)} " +
                 f"v:{len(self._vertices)} " +
-                f"i:{len(self._trajectory_end_indices)} " +
+                f"i:{len(self._trajectory_start_indices)} " +
                 f"r:{self._rotation} " +
                 f"s:{self._scale} " +
                 f"t:{self._translation}" +
@@ -141,12 +198,12 @@ class MeshRegistry:
         self._items: Final = set[Mesh2D]()
 
     def add(self, mesh: Mesh2D) -> None:
-        self._log.write(f"add: {mesh}")
+        self._log.write(f"add: {mesh!r}")
         self._items.add(mesh)
         self.on_add.notify(mesh)
 
     def remove(self, mesh: Mesh2D) -> None:
-        self._log.write(f"remove: {mesh}")
+        self._log.write(f"remove: {mesh!r}")
         self._items.remove(mesh)
         self.on_remove.notify(mesh)
 
@@ -163,3 +220,35 @@ class MeshRegistry:
 
     def items_count(self) -> int:
         return len(self._items)
+
+
+def _test():
+    s = """1 1
+    
+2 2
+3 3
+
+
+4 4
+5 5
+6 6
+
+
+
+
+
+
+"""
+
+    v, i = Mesh2D.from_text_repr(s)
+    print(v, i)
+
+    m = Mesh2D(v, i)
+
+    print(m.to_text_repr())
+
+    pass
+
+
+if __name__ == '__main__':
+    _test()
