@@ -12,16 +12,16 @@ from kf_dpg.impl.text import Text
 from kf_dpg.misc.color import Color
 from kf_dpg.misc.vector import Vector2D
 from vart.assets import Assets
-from vart.detail.mesh import Mesh2D, MeshRegistry
+from vart.detail.mesh import Mesh, MeshRegistry
 from vart.detail.trajectory import Trajectory
-from vart.detail.transformation import Transformation2D
+from vart.detail.transformation import Transformation
 from vart.misc.log import Logger
 
 
 class MeshEditDialog(EditDialog):
 
     @classmethod
-    def _get_title(cls, mesh: Mesh2D) -> str:
+    def _get_title(cls, mesh: Mesh) -> str:
         return f"Edit: '{mesh.name}'"
 
     def __init__(self):
@@ -39,7 +39,7 @@ class MeshEditDialog(EditDialog):
             .add(self._translation)
         )
 
-    def begin(self, mesh: Mesh2D) -> None:
+    def begin(self, mesh: Mesh) -> None:
         super().begin(mesh)
 
         self._name.set_value(mesh.name)
@@ -58,7 +58,7 @@ class MeshEditDialog(EditDialog):
 class MeshCard(CustomWidget):
 
     def __init__(
-            self, mesh: Mesh2D,
+            self, mesh: Mesh,
             mesh_registry: MeshRegistry,
             *,
             edit_dialog_button: Button,
@@ -98,7 +98,7 @@ class MeshCard(CustomWidget):
 
         self._name.set_value(mesh.name)
 
-    def terminate(self, mesh: Mesh2D) -> None:
+    def terminate(self, mesh: Mesh) -> None:
         if mesh is self._target_mesh:
             self.delete()
 
@@ -147,7 +147,7 @@ class MeshList(CustomWidget):
 
         self._mesh_registry.on_add.add_listener(self._add_mesh_card)
 
-    def _add_mesh_card(self, mesh: Mesh2D) -> None:
+    def _add_mesh_card(self, mesh: Mesh) -> None:
         # noinspection PyTypeChecker
         self._mesh_list.add(MeshCard(
             mesh,
@@ -170,7 +170,7 @@ class MeshPlotView(CustomWidget):
         3: Color.discord_warning(),
     }
 
-    def __init__(self, mesh: Mesh2D, plot: Container):
+    def __init__(self, mesh: Mesh, plot: Container):
         self._mesh: Final = mesh
         self._plot: Final = plot
 
@@ -203,7 +203,7 @@ class MeshPlotView(CustomWidget):
         trajectory.on_tool_id_change.add_listener(_update_color)
         _update_color(trajectory.tool_id)
 
-        def _update_transformation(transformation: Transformation2D):
+        def _update_transformation(transformation: Transformation):
             line_series.set_value(trajectory.transformed(transformation.apply))
 
         self._mesh.transformation.on_change.add_listener(_update_transformation)
@@ -223,10 +223,10 @@ class MeshPlotView(CustomWidget):
     def _update_name(self, name: str) -> None:
         self._translation_point.set_label(name)
 
-    def _update_transformation(self, transformation: Transformation2D) -> None:
+    def _update_transformation(self, transformation: Transformation) -> None:
         self._translation_point.set_value(transformation.translation)
 
-    def terminate(self, mesh: Mesh2D) -> None:
+    def terminate(self, mesh: Mesh) -> None:
         if mesh is not self._mesh:
             return
 
@@ -278,7 +278,7 @@ class WorkArea(CustomWidget):
 
         self._mesh_registry.on_add.add_listener(self._add_mesh_plot_item)
 
-    def _add_mesh_plot_item(self, mesh: Mesh2D) -> None:
+    def _add_mesh_plot_item(self, mesh: Mesh) -> None:
         view = MeshPlotView(mesh, self._plot)
         self._mesh_registry.on_remove.add_listener(view.terminate)
 

@@ -5,11 +5,11 @@ from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
 
 
-class Transformation2D:
+class Transformation:
     type vec2f = Vector2D[float]
 
     @classmethod
-    def default(cls) -> Transformation2D:
+    def default(cls) -> Transformation:
         return cls(
             scale=Vector2D(1, 1),
             rotation=0,
@@ -17,7 +17,7 @@ class Transformation2D:
         )
 
     def __init__(self, *, scale: vec2f, rotation: float, translation: vec2f):
-        self.on_change: Final[Subject[Transformation2D]] = Subject()
+        self.on_change: Final[Subject[Transformation]] = Subject()
 
         self._scale = scale
         self._rotation = rotation
@@ -26,8 +26,8 @@ class Transformation2D:
     def __repr__(self):
         return f"<{self.__class__.__name__} S:{self._scale} R:{self._rotation} T:{self._translation}>"
 
-    def clone(self) -> Transformation2D:
-        return Transformation2D(
+    def clone(self) -> Transformation:
+        return Transformation(
             scale=self._scale,
             rotation=self._rotation,
             translation=self._translation

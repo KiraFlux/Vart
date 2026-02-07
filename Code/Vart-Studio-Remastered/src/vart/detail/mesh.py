@@ -3,7 +3,7 @@ from typing import Final, Iterable, AbstractSet
 from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
 from vart.detail.trajectory import Trajectory
-from vart.detail.transformation import Transformation2D
+from vart.detail.transformation import Transformation
 from vart.misc.log import Logger
 
 
@@ -38,7 +38,7 @@ class ObservableRegistry[T]:
         return self._items
 
 
-class Mesh2D:
+class Mesh:
     """
     2D меш
     Группа траекторий.
@@ -50,16 +50,16 @@ class Mesh2D:
             trajectories: Iterable[Trajectory],
             *,
             name: str = "unnamed",
-            transformation: Transformation2D = None
+            transformation: Transformation = None
     ):
-        self.transformation: Final = transformation or Transformation2D.default()
+        self.transformation: Final = transformation or Transformation.default()
         self.trajectories: Final = ObservableRegistry(trajectories)
 
         self._name = name
         self.on_name_changed: Final = Subject[str]()
 
-    def clone(self) -> Mesh2D:
-        return Mesh2D(
+    def clone(self) -> Mesh:
+        return Mesh(
             trajectories=(
                 t.clone()
                 for t in self.trajectories.values()
@@ -94,10 +94,10 @@ class Mesh2D:
         )
 
 
-class MeshRegistry(ObservableRegistry[Mesh2D]):
+class MeshRegistry(ObservableRegistry[Mesh]):
 
     def add_dummy(self) -> None:
-        self.add(Mesh2D(
+        self.add(Mesh(
             (
                 Trajectory(
                     (
@@ -121,9 +121,9 @@ class MeshRegistry(ObservableRegistry[Mesh2D]):
             name="Dummy"
         ))
 
-    def add_clone(self, mesh: Mesh2D) -> None:
+    def add_clone(self, mesh: Mesh) -> None:
         self.add(mesh.clone())
 
-    def remove(self, mesh: Mesh2D) -> None:
+    def remove(self, mesh: Mesh) -> None:
         mesh.trajectories.clear()
         super().remove(mesh)
