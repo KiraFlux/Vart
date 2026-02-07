@@ -28,9 +28,9 @@ class Transformation:
 
     def clone(self) -> Transformation:
         return Transformation(
-            scale=self._scale,
+            scale=self._scale.clone(),
             rotation=self._rotation,
-            translation=self._translation
+            translation=self._translation.clone()
         )
 
     def apply(self, point: vec2f) -> tuple[float, float]:
