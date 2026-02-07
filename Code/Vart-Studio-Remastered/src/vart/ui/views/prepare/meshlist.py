@@ -21,16 +21,16 @@ class MeshEditDialog(EditDialog):
     def __init__(self):
         self._name: Final = TextInput()
         self._rotation: Final = IntInput(step_fast=15, step=5).with_interval((-360, 360))
-        self._scale: Final = FloatInput2D("Масштаб", interval=(-10000, 10000), )
-        self._translation: Final = FloatInput2D("Позиция", interval=(-10000, 10000), )
+        self._scale: Final = FloatInput2D(step=0.25, step_fast=1.0).with_interval((-10000, 10000))
+        self._translation: Final = FloatInput2D(step=10, step_fast=100).with_interval((-10000, 10000))
 
         super().__init__(
             VBox()
             .with_width(160)
             .add(self._name.with_label("Наименование"))
             .add(self._rotation.with_label("Поворот"))
-            .add(self._scale)
-            .add(self._translation)
+            .add(self._scale.with_label("Масштаб"))
+            .add(self._translation.with_label("Позиция"))
         )
 
     def begin(self, mesh: Mesh) -> None:
@@ -128,7 +128,6 @@ class MeshRegistryView(CustomWidget):
         )
 
         def add_mesh_card(mesh: Mesh) -> None:
-
             def open_edit_dialog():
                 self._edit_dialog.begin(mesh)
 
