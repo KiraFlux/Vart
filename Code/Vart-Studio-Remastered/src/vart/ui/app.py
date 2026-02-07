@@ -1,17 +1,13 @@
 from typing import Sequence
 
 from kf_dpg.core.app import App
-from kf_dpg.core.custom import CustomWidget
+from kf_dpg.core.dpg.widget import DpgWidget
 from kf_dpg.impl.containers import Window, TabBar, Tab
 from vart.assets import Assets
 
 
 class VartApplication(App):
-    def __init__(
-            self,
-            window: Window,
-            views: Sequence[tuple[str, CustomWidget]]
-    ):
+    def __init__(self, window: Window, views: Sequence[tuple[str, DpgWidget]]):
         tab_bar = TabBar()
 
         for name, view in views:

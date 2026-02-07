@@ -19,18 +19,19 @@ class Trajectory:
             tool_id: int = 1,
             is_looped: bool = False
     ):
-        self.on_geometry_change: Final[Subject[Trajectory]] = Subject()
-        self.on_tool_id_change: Final[Subject[int]] = Subject()
+        self.on_vertices_changed: Final = Subject[Trajectory]()
+        self.on_loop_changed: Final = Subject[bool]()
+        self.on_tool_id_changed: Final = Subject[int]()
 
         self._vertices = vertices
         self._tool_id = tool_id
-        self._is_looped = is_looped
+        self._loop = is_looped
 
     def clone(self) -> Trajectory:
         return Trajectory(
             self._vertices,
             tool_id=self._tool_id,
-            is_looped=self._is_looped
+            is_looped=self._loop
         )
 
     def transformed(self, transformation: Callable[[vec2f], tuple[float, float]]) -> tuple[list[float], list[float]]:
@@ -42,10 +43,6 @@ class Trajectory:
             result_x.append(x)
             result_y.append(y)
 
-        if self._is_looped:
-            result_x.append(result_x[0])
-            result_y.append(result_y[0])
-
         return result_x, result_y
 
     @property
@@ -56,7 +53,7 @@ class Trajectory:
     def set_vertices(self, v: Sequence[vec2f]):
         if self._vertices != v:
             self._vertices = v
-            self.on_geometry_change.notify(self)
+            self.on_vertices_changed.notify(self)
 
     @vertices.setter
     def vertices(self, v):
@@ -73,22 +70,26 @@ class Trajectory:
     def set_tool_id(self, tool_id: int):
         if self._tool_id != tool_id:
             self._tool_id = tool_id
-            self.on_tool_id_change.notify(tool_id)
+            self.on_tool_id_changed.notify(tool_id)
 
     @tool_id.setter
     def tool_id(self, i):
         self.set_tool_id(i)
 
     @property
-    def is_looped(self):
+    def loop(self):
         """
         Замкнутость траектории
-        Конечная вершина переходит к начальной
-        """
-        return self._is_looped
 
-    @is_looped.setter
-    def is_looped(self, x):
-        if self._is_looped != x:
-            self._is_looped = x
-            self.on_geometry_change.notify(self)
+        Если траектория замкнута, то при планировании траектории начальная вершина может быть любой из этой траектории
+        """
+        return self._loop
+
+    def set_loop(self, loop: bool):
+        if self._loop != loop:
+            self._loop = loop
+            self.on_loop_changed.notify(loop)
+
+    @loop.setter
+    def loop(self, x):
+        self.set_loop(x)

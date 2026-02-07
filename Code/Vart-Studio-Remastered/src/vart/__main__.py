@@ -1,26 +1,47 @@
 import vart.boot
+from vart.detail.config import Config
 
 vart.boot.attach_libs()
 
+from kf_dpg.impl.containers import Window, HBox
+
+from vart.detail.workarea import WorkArea
 from vart.detail.mesh import MeshRegistry
-from kf_dpg.impl.containers import Window
 from vart.ui.app import VartApplication
 from vart.ui.views.config import ConfigView
 from vart.ui.views.jornal import JornalView
-from vart.ui.views.prepare import PreparingView
+from vart.ui.views.prepare.workarea import WorkAreaView
+from vart.ui.views.prepare.meshlist import MeshRegistryView
 
 
 def _launch():
-    mesh_registry = MeshRegistry()
+    config = Config(
+        work_area=WorkArea(
+            width=1000,
+            height=1000
+        )
+    )
 
+    mesh_registry = MeshRegistry()
     mesh_registry.add_dummy()
 
     app = VartApplication(
         Window(),
         (
-            ("Подготовка", PreparingView(mesh_registry)),
-            ("Параметры", ConfigView()),
-            ("Журнал", JornalView()),
+            (
+                "Подготовка",
+                HBox()
+                .add(MeshRegistryView(mesh_registry))
+                .add(WorkAreaView(mesh_registry, config.work_area))
+            ),
+            (
+                "Параметры",
+                ConfigView()
+            ),
+            (
+                "Журнал",
+                JornalView()
+            ),
         )
     )
 
@@ -29,8 +50,6 @@ def _launch():
         1280, 720,
         user_tasks=()
     )
-
-    return
 
 
 if __name__ == '__main__':
