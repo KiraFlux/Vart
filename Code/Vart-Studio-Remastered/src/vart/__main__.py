@@ -1,8 +1,9 @@
 import vart.boot
+from kf_dpg.misc.vector import Vector2D
 
 vart.boot.attach_libs()
 
-from vart.detail.mesh import MeshRegistry, Mesh2D
+from vart.detail.mesh import MeshRegistry, Mesh2D, Trajectory
 from kf_dpg.impl.containers import Window
 from vart.ui.app import VartApplication
 from vart.ui.views.config import ConfigView
@@ -13,7 +14,25 @@ from vart.ui.views.prepare import PreparingView
 def _launch():
     mesh_registry = MeshRegistry()
 
-    mesh_registry.add(Mesh2D((), (), name="Test"))
+    mesh_registry.add(
+        Mesh2D(
+            (
+                Trajectory(
+                    (
+                        Vector2D(1, 1),
+                        Vector2D(1, -1),
+                    )
+                ),
+                Trajectory(
+                    (
+                        Vector2D(-1, -1),
+                        Vector2D(-1, 1),
+                    )
+                ),
+            ),
+            name="Test"
+        )
+    )
 
     app = VartApplication(
         Window(),

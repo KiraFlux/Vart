@@ -42,6 +42,10 @@ class Logger:
         self.on_write.notify(None)
 
     @classmethod
+    def clear(cls):
+        cls._logs.clear()
+
+    @classmethod
     def get_keys(cls) -> Sequence[str]:
         """Получить все доступные ключи журнала"""
         return tuple(cls._logs.keys())
