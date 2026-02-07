@@ -233,10 +233,32 @@ class WorkArea(CustomWidget):
         self._mesh_registry: Final = mesh_registry
         self._plot: Final = Plot()
 
+        def _make_button():
+            return Button().with_width(200)
+
         super().__init__(
-            self._plot
-            .with_width(-1)
-            .with_height(-1)
+            VBox()
+            .add(
+                HBox()
+                .add(
+                    _make_button()
+                    .with_label("Экспорт")
+                )
+                .add(
+                    _make_button()
+                    .with_label("Импорт")
+                )
+                .add(
+                    Button()
+                    .with_width(-1)
+                    .with_label("Рабочая область")
+                )
+            )
+            .add(
+                self._plot
+                .with_width(-1)
+                .with_height(-1)
+            )
         )
 
         for mesh in self._mesh_registry.values():
