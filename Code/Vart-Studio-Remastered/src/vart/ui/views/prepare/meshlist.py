@@ -4,12 +4,69 @@ from kf_dpg.core.custom import CustomWidget
 from kf_dpg.etc.dialog import EditDialog, ConfirmDialog
 from kf_dpg.etc.input2d import FloatInput2D
 from kf_dpg.impl.boxes import TextInput, IntInput
-from kf_dpg.impl.buttons import Button
-from kf_dpg.impl.containers import VBox, ChildWindow, HBox
+from kf_dpg.impl.buttons import Button, CheckBox
+from kf_dpg.impl.containers import VBox, ChildWindow, HBox, Tab, TabBar
+from kf_dpg.impl.misc import Spacer
 from kf_dpg.impl.text import Text
 from kf_dpg.misc.color import Color
 from vart.assets import Assets
 from vart.detail.mesh import Mesh, MeshRegistry
+from vart.detail.trajectory import Trajectory
+
+
+class TrajectoryView(CustomWidget):
+    """
+    Карточка просмортра и редактирования трактории
+    """
+
+    def __init__(self, mesh_registry: MeshRegistry, mesh: Mesh, trajectory: Trajectory) -> None:
+        loop = CheckBox(_value=trajectory.loop)
+        tool_id = IntInput(interval_min=0, interval_max=99)
+
+        super().__init__(
+            Tab(f"({len(trajectory.vertices)})")
+            .add(
+                HBox()
+                .add(
+                    VBox()
+                    .with_width(200)
+                    .add(
+                        loop
+                        .with_label("Замкнутый")
+                        .with_handler(trajectory.set_loop)
+                    )
+                    .add(
+                        tool_id
+                        .with_label("Инструмент")
+                        .with_handler(trajectory.set_tool_id)
+                    )
+                )
+                .add(Spacer().with_height(50))
+                .add(
+                    VBox()
+                    .with_width(200)
+                    .add(
+                        Button()
+                        .with_width(-1)
+                        .with_label("Удалить")
+                        .with_handler(lambda: mesh.trajectories.remove(trajectory))
+                    )
+                    .add(
+                        Button()
+                        .with_width(-1)
+                        .with_label("Отделить")
+                        .with_handler(lambda: mesh_registry.add_extracted_trajectory(mesh, trajectory))
+                    )
+                )
+            )
+        )
+
+        def remove(__t: Trajectory) -> None:
+            if __t is trajectory:
+                self.attach_delete_observer(lambda _: mesh.trajectories.on_remove.remove_listener(remove))
+                self.delete()
+
+        mesh.trajectories.on_remove.add_listener(remove)
 
 
 class MeshEditDialog(EditDialog):
@@ -18,19 +75,43 @@ class MeshEditDialog(EditDialog):
     def _get_title(cls, mesh: Mesh) -> str:
         return f"Edit: '{mesh.name}'"
 
-    def __init__(self):
+    def __init__(self, mesh_registry: MeshRegistry):
+        self._mesh_registry: Final = mesh_registry
         self._name: Final = TextInput()
         self._rotation: Final = IntInput(step_fast=15, step=5).with_interval((-360, 360))
         self._scale: Final = FloatInput2D(step=0.25, step_fast=1.0).with_interval((-10000, 10000))
         self._translation: Final = FloatInput2D(step=10, step_fast=100).with_interval((-10000, 10000))
 
+        self._trajectories_container: Final = TabBar()
+        self._trajectory_views: Final = set[TrajectoryView]()
+
+        def make_title(text: str):
+            return (
+                VBox()
+                .add(Text(text).with_font(Assets.label_font))
+                .add(Spacer().with_height(20))
+            )
+
         super().__init__(
-            VBox()
-            .with_width(160)
-            .add(self._name.with_label("Наименование"))
-            .add(self._rotation.with_label("Поворот"))
-            .add(self._scale.with_label("Масштаб"))
-            .add(self._translation.with_label("Позиция"))
+            HBox()
+            .add(
+                VBox()
+                .with_width(200)
+                .add(make_title("Меш"))
+                .add(self._name.with_label("Наименование"))
+                .add(self._rotation.with_label("Поворот"))
+                .add(self._scale.with_label("Масштаб"))
+                .add(self._translation.with_label("Позиция"))
+            )
+            .add(
+                Spacer()
+                .with_width(100)
+            )
+            .add(
+                VBox()
+                .add(make_title("Траектории"))
+                .add(self._trajectories_container)
+            )
         )
 
     def begin(self, mesh: Mesh) -> None:
@@ -47,6 +128,18 @@ class MeshEditDialog(EditDialog):
 
         self._translation.set_value(mesh.transformation.translation)
         self._translation.set_handler(mesh.transformation.set_translation)
+
+        for __t in self._trajectory_views:
+            __t.delete()
+
+        def add_trajectory_view(trajectory: Trajectory):
+            view = TrajectoryView(self._mesh_registry, mesh, trajectory)
+            self._trajectory_views.add(view)
+            # noinspection PyTypeChecker
+            self._trajectories_container.add(view)
+
+        for __t in mesh.trajectories.values():
+            add_trajectory_view(__t)
 
 
 class MeshView(CustomWidget):
@@ -100,7 +193,7 @@ class MeshRegistryView(CustomWidget):
 
     def __init__(self, mesh_registry: MeshRegistry):
         self._confirm_dialog: Final = ConfirmDialog().with_font(Assets.default_font)
-        self._edit_dialog: Final = MeshEditDialog().with_font(Assets.default_font)
+        self._edit_dialog: Final = MeshEditDialog(mesh_registry).with_font(Assets.default_font)
 
         mesh_list: Final = ChildWindow(scrollable_y=True)
 
@@ -128,16 +221,13 @@ class MeshRegistryView(CustomWidget):
         )
 
         def add_mesh_card(mesh: Mesh) -> None:
-            def open_edit_dialog():
-                self._edit_dialog.begin(mesh)
-
-            edit_button = Button().with_handler(open_edit_dialog).with_label("···")
-
             # noinspection PyTypeChecker
             mesh_list.add(MeshView(
                 mesh,
                 mesh_registry,
-                edit_dialog_button=edit_button,  # Передаем готовую кнопку
+                edit_dialog_button=Button().with_handler(
+                    lambda: self._edit_dialog.begin(mesh)
+                ).with_label("···"),
                 mesh_delete_button=Button().with_handler(
                     lambda: self._confirm_dialog.begin(
                         f"Удалить '{mesh.name}'?",
