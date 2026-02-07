@@ -26,18 +26,9 @@ class MeshEditDialog(EditDialog):
 
     def __init__(self):
         self._name: Final = TextInput().with_label("Наименование")
-
         self._rotation: Final = IntInput(step_fast=15, step=5).with_interval((-360, 360))
-
-        self._scale: Final = FloatInput2D(
-            "Масштаб",
-            interval=(-10000, 10000),
-        )
-
-        self._translation: Final = FloatInput2D(
-            "Позиция",
-            interval=(-10000, 10000),
-        )
+        self._scale: Final = FloatInput2D("Масштаб", interval=(-10000, 10000), )
+        self._translation: Final = FloatInput2D("Позиция", interval=(-10000, 10000), )
 
         super().__init__(
             VBox()
@@ -67,15 +58,18 @@ class MeshEditDialog(EditDialog):
 class MeshCard(CustomWidget):
 
     def __init__(
-            self, mesh: Mesh2D, *,
+            self, mesh: Mesh2D,
+            mesh_registry: MeshRegistry,
+            *,
             edit_dialog_button: Button,
             mesh_delete_button: Button,
-            mesh_clone_button: Button,
-    ) -> None:
+    ):
         self._target_mesh: Final = mesh
 
         self._name: Final = Text(color=Color.discord_success())
         self._target_mesh.on_name_changed.add_listener(self._name.set_value)
+
+        mesh_registry.on_remove.add_listener(self.terminate)
 
         super().__init__(
             ChildWindow()
@@ -90,7 +84,8 @@ class MeshCard(CustomWidget):
                         .with_label(" x ")
                     )
                     .add(
-                        mesh_clone_button
+                        Button()
+                        .with_handler(lambda: mesh_registry.add_clone(mesh))
                         .with_label("Клонировать")
                     )
                     .add(
@@ -114,7 +109,7 @@ class MeshCard(CustomWidget):
 
 class MeshList(CustomWidget):
 
-    def __init__(self, mesh_registry: MeshRegistry) -> None:
+    def __init__(self, mesh_registry: MeshRegistry):
         self._mesh_registry: Final = mesh_registry
 
         self._mesh_edit_dialog: Final = MeshEditDialog().with_font(Assets.default_font)
@@ -153,8 +148,10 @@ class MeshList(CustomWidget):
         self._mesh_registry.on_add.add_listener(self._add_mesh_card)
 
     def _add_mesh_card(self, mesh: Mesh2D) -> None:
-        card = MeshCard(
+        # noinspection PyTypeChecker
+        self._mesh_list.add(MeshCard(
             mesh,
+            self._mesh_registry,
             edit_dialog_button=self._mesh_edit_dialog.create_edit_button(mesh),
             mesh_delete_button=Button().with_handler(
                 lambda: self._dialog.begin(
@@ -162,13 +159,7 @@ class MeshList(CustomWidget):
                     on_confirm=lambda: self._mesh_registry.remove(mesh)
                 )
             ),
-            mesh_clone_button=Button().with_handler(
-                lambda: self._mesh_registry.add_clone(mesh)
-            )
-        )
-
-        self._mesh_registry.on_remove.add_listener(card.terminate)
-        self._mesh_list.add(card)
+        ))
 
 
 class MeshPlotView(CustomWidget):
@@ -238,7 +229,7 @@ class MeshPlotView(CustomWidget):
 
 class WorkArea(CustomWidget):
 
-    def __init__(self, mesh_registry: MeshRegistry) -> None:
+    def __init__(self, mesh_registry: MeshRegistry):
         self._mesh_registry: Final = mesh_registry
         self._plot: Final = Plot()
 
@@ -259,7 +250,7 @@ class WorkArea(CustomWidget):
 
 
 class PreparingView(CustomWidget):
-    def __init__(self, mesh_registry: MeshRegistry) -> None:
+    def __init__(self, mesh_registry: MeshRegistry):
         super().__init__(
             HBox()
             .add(MeshList(mesh_registry))
