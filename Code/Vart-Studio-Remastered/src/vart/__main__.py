@@ -21,12 +21,14 @@ def _launch():
                     (
                         Vector2D(1, 1),
                         Vector2D(1, -1),
+                        Vector2D(-1, -1),
                     )
                 ),
                 Trajectory(
                     (
                         Vector2D(-1, -1),
                         Vector2D(-1, 1),
+                        Vector2D(1, 1),
                     )
                 ),
             ),

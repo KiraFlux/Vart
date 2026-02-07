@@ -1,73 +1,9 @@
-from typing import Sequence, Final, Iterable, AbstractSet
+from typing import Sequence, Final, Iterable, AbstractSet, Callable
 
 from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
+from vart.detail.transformation import Transformation2D
 from vart.misc.log import Logger
-
-type vec2f = Vector2D[float]
-
-
-class Transformation2D:
-
-    @classmethod
-    def default(cls) -> Transformation2D:
-        return cls(
-            scale=Vector2D(1, 1),
-            rotation=0,
-            translation=Vector2D(0, 0)
-        )
-
-    def __init__(self, *, scale: vec2f, rotation: float, translation: vec2f):
-        self.on_change: Final[Subject[Transformation2D]] = Subject()
-
-        self._rotation = rotation
-        self._scale = scale
-        self._translation = translation
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} S:{self._scale} R:{self._rotation} T:{self._translation}>"
-
-    @property
-    def rotation(self):
-        """Поворот в радианах"""
-        return self._rotation
-
-    def set_rotation(self, x: float):
-        if self._rotation != x:
-            self._rotation = x
-            self.on_change.notify(self)
-
-    @rotation.setter
-    def rotation(self, x):
-        self.set_rotation(x)
-
-    @property
-    def translation(self):
-        """Вектор переноса"""
-        return self._translation
-
-    def set_translation(self, x: vec2f):
-        if self._translation != x:
-            self._translation = x
-            self.on_change.notify(self)
-
-    @translation.setter
-    def translation(self, x):
-        self.set_translation(x)
-
-    @property
-    def scale(self):
-        """Масштабирование по осям в каноничном базисе"""
-        return self._scale
-
-    def set_scale(self, x: vec2f):
-        if self._scale != x:
-            self._scale = x
-            self.on_change.notify(self)
-
-    @scale.setter
-    def scale(self, x):
-        self.set_scale(x)
 
 
 class Trajectory:
@@ -75,6 +11,8 @@ class Trajectory:
     Траектория
     Неразрывная линия одного цвета
     """
+
+    type vec2f = Vector2D[float]
 
     def __init__(
             self,
@@ -86,6 +24,17 @@ class Trajectory:
 
         self._vertices = vertices
         self._is_looped = is_looped
+
+    def transformed(self, transformation: Callable[[vec2f], tuple[float, float]]) -> tuple[list[float], list[float]]:
+        result_x = list()
+        result_y = list()
+
+        for vertex in self.vertices:
+            x, y = transformation(vertex)
+            result_x.append(x)
+            result_y.append(y)
+
+        return result_x, result_y
 
     @property
     def vertices(self):
