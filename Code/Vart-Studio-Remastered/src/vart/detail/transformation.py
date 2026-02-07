@@ -26,6 +26,13 @@ class Transformation2D:
     def __repr__(self):
         return f"<{self.__class__.__name__} S:{self._scale} R:{self._rotation} T:{self._translation}>"
 
+    def clone(self) -> Transformation2D:
+        return Transformation2D(
+            scale=self._scale,
+            rotation=self._rotation,
+            translation=self._translation
+        )
+
     def apply(self, point: vec2f) -> tuple[float, float]:
         """
         Применить

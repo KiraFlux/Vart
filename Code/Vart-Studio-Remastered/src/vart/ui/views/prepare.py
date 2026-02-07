@@ -5,16 +5,15 @@ from kf_dpg.core.custom import CustomWidget
 from kf_dpg.core.dpg.plot import Plot, DragPoint, LineSeries
 from kf_dpg.etc.dialog import EditDialog, ConfirmDialog
 from kf_dpg.etc.input2d import FloatInput2D
-from kf_dpg.impl.boxes import TextInput
+from kf_dpg.impl.boxes import TextInput, IntInput
 from kf_dpg.impl.buttons import Button
 from kf_dpg.impl.containers import VBox, ChildWindow, HBox
-from kf_dpg.impl.misc import Spacer
-from kf_dpg.impl.sliders import IntSlider
 from kf_dpg.impl.text import Text
 from kf_dpg.misc.color import Color
 from kf_dpg.misc.vector import Vector2D
 from vart.assets import Assets
-from vart.detail.mesh import Mesh2D, MeshRegistry, Trajectory
+from vart.detail.mesh import Mesh2D, MeshRegistry
+from vart.detail.trajectory import Trajectory
 from vart.detail.transformation import Transformation2D
 from vart.misc.log import Logger
 
@@ -28,7 +27,7 @@ class MeshEditDialog(EditDialog):
     def __init__(self):
         self._name: Final = TextInput().with_label("Наименование")
 
-        self._rotation: Final = IntSlider("Поворот", interval=(0, 360))
+        self._rotation: Final = IntInput(step_fast=15, step=5).with_interval((-360, 360))
 
         self._scale: Final = FloatInput2D(
             "Масштаб",
@@ -51,21 +50,28 @@ class MeshEditDialog(EditDialog):
 
     def begin(self, mesh: Mesh2D) -> None:
         super().begin(mesh)
-        self._name.set_value(mesh.name)
-        self._rotation.set_value(mesh.transformation.get_rotation_degrees())
-        self._scale.set_value(mesh.transformation.scale)
-        self._translation.set_value(mesh.transformation.translation)
 
-    def apply(self, mesh: Mesh2D) -> None:
-        mesh.name = self._name.get_value()
-        mesh.transformation.set_rotation_degrees(self._rotation.get_value())
-        mesh.transformation.scale = self._scale.get_value()
-        mesh.transformation.translation = self._translation.get_value()
+        self._name.set_value(mesh.name)
+        self._name.set_handler(mesh.set_name)
+
+        self._rotation.set_value(mesh.transformation.get_rotation_degrees())
+        self._rotation.set_handler(mesh.transformation.set_rotation_degrees)
+
+        self._scale.set_value(mesh.transformation.scale)
+        self._scale.set_handler(mesh.transformation.set_scale)
+
+        self._translation.set_value(mesh.transformation.translation)
+        self._translation.set_handler(mesh.transformation.set_translation)
 
 
 class MeshCard(CustomWidget):
 
-    def __init__(self, mesh: Mesh2D, edit_dialog_button: Button, mesh_delete_button: Button) -> None:
+    def __init__(
+            self, mesh: Mesh2D, *,
+            edit_dialog_button: Button,
+            mesh_delete_button: Button,
+            mesh_clone_button: Button,
+    ) -> None:
         self._target_mesh: Final = mesh
 
         self._name: Final = Text(color=Color.discord_success())
@@ -80,12 +86,16 @@ class MeshCard(CustomWidget):
                 .add(
                     HBox()
                     .add(
-                        edit_dialog_button
-                        .with_label("···")
-                    )
-                    .add(
                         mesh_delete_button
                         .with_label(" x ")
+                    )
+                    .add(
+                        mesh_clone_button
+                        .with_label("Клонировать")
+                    )
+                    .add(
+                        edit_dialog_button
+                        .with_label("···")
                     )
                 )
             )
@@ -145,12 +155,15 @@ class MeshList(CustomWidget):
     def _add_mesh_card(self, mesh: Mesh2D) -> None:
         card = MeshCard(
             mesh,
-            self._mesh_edit_dialog.create_edit_button(mesh),
-            Button().with_handler(
+            edit_dialog_button=self._mesh_edit_dialog.create_edit_button(mesh),
+            mesh_delete_button=Button().with_handler(
                 lambda: self._dialog.begin(
                     f"Удалить '{mesh.name}'?",
                     on_confirm=lambda: self._mesh_registry.remove(mesh)
                 )
+            ),
+            mesh_clone_button=Button().with_handler(
+                lambda: self._mesh_registry.add_clone(mesh)
             )
         )
 
