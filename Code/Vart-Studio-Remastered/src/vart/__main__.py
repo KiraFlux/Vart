@@ -19,16 +19,16 @@ def _launch():
             (
                 Trajectory(
                     (
-                        Vector2D(1, 1),
-                        Vector2D(1, -1),
-                        Vector2D(-1, -1),
+                        Vector2D(100, 100),
+                        Vector2D(100, -100),
+                        Vector2D(-100, -100),
                     )
                 ),
                 Trajectory(
                     (
-                        Vector2D(-1, -1),
-                        Vector2D(-1, 1),
-                        Vector2D(1, 1),
+                        Vector2D(-100, -100),
+                        Vector2D(-100, 100),
+                        Vector2D(100, 100),
                     )
                 ),
             ),
