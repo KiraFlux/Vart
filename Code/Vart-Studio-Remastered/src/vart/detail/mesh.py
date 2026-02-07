@@ -1,4 +1,4 @@
-from typing import Final, Iterable
+from typing import Final, Iterable, Callable
 
 from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
@@ -14,6 +14,32 @@ class Mesh:
     Имеет общую трансформацию
     """
 
+    @classmethod
+    def make_dummy(cls, name: str = "dummy"):
+        return cls(
+            (
+                Trajectory(
+                    (
+                        Vector2D(50, 50),
+                        Vector2D(100, -100),
+                        Vector2D(-50, -50),
+                    ),
+                    tool_id=1,
+                    is_looped=False
+                ),
+                Trajectory(
+                    (
+                        Vector2D(-100, -100),
+                        Vector2D(-100, 100),
+                        Vector2D(100, 100),
+                    ),
+                    tool_id=2,
+                    is_looped=True
+                ),
+            ),
+            name=name
+        )
+
     def __init__(
             self,
             trajectories: Iterable[Trajectory],
@@ -27,13 +53,16 @@ class Mesh:
         self._name = name
         self.on_name_changed: Final = Subject[str]()
 
+        self._clone_count: int = 0
+
     def clone(self) -> Mesh:
+        self._clone_count += 1
         return Mesh(
             trajectories=(
                 t.clone()
                 for t in self.trajectories.values()
             ),
-            name=self._name,
+            name=f"{self._name} ({self._clone_count})",
             transformation=self.transformation.clone()
         )
 
@@ -66,29 +95,7 @@ class Mesh:
 class MeshRegistry(ObservableRegistry[Mesh]):
 
     def add_dummy(self) -> None:
-        self.add(Mesh(
-            (
-                Trajectory(
-                    (
-                        Vector2D(100, 100),
-                        Vector2D(100, -100),
-                        Vector2D(-100, -100),
-                    ),
-                    tool_id=1,
-                    is_looped=False
-                ),
-                Trajectory(
-                    (
-                        Vector2D(-100, -100),
-                        Vector2D(-100, 100),
-                        Vector2D(100, 100),
-                    ),
-                    tool_id=2,
-                    is_looped=True
-                ),
-            ),
-            name="Dummy"
-        ))
+        self.add(Mesh.make_dummy(f"Dummy:{len(self._items)}"))
 
     def add_clone(self, mesh: Mesh) -> None:
         self.add(mesh.clone())
