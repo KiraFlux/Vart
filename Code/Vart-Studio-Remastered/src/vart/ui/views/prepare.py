@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, ClassVar, Mapping
 
 from kf_dpg.abc.entities import Container
 from kf_dpg.core.custom import CustomWidget
@@ -163,6 +163,12 @@ class MeshList(CustomWidget):
 
 
 class MeshPlotView(CustomWidget):
+    _color_from_tool_id: ClassVar[Mapping[int, Color]] = {
+        0: Color.gray(0.6).with_alpha(0.5),
+        1: Color.discord_nitro(),
+        2: Color.discord_online(),
+        3: Color.discord_warning(),
+    }
 
     def __init__(self, mesh: Mesh2D, plot: Container):
         self._mesh: Final = mesh
@@ -191,18 +197,24 @@ class MeshPlotView(CustomWidget):
         line_series = LineSeries(_value=(list(), list()))
         self._plot.add(line_series)
 
-        def _update(transformation: Transformation2D):
+        def _update_color(tool_id: int):
+            line_series.set_color(self._color_from_tool_id.get(tool_id, Color.discord_danger()))
+
+        trajectory.on_tool_id_change.add_listener(_update_color)
+        _update_color(trajectory.tool_id)
+
+        def _update_transformation(transformation: Transformation2D):
             line_series.set_value(trajectory.transformed(transformation.apply))
 
-        self._mesh.transformation.on_change.add_listener(_update)
-
-        _update(self._mesh.transformation)
+        self._mesh.transformation.on_change.add_listener(_update_transformation)
+        _update_transformation(self._mesh.transformation)
 
         def _remove(__t: Trajectory):
             if __t is not trajectory:
                 return
 
-            self._mesh.transformation.on_change.remove_listener(_update)
+            trajectory.on_tool_id_change.remove_listener(_update_color)
+            self._mesh.transformation.on_change.remove_listener(_update_transformation)
             self._mesh.trajectories.on_remove.remove_listener(_remove)
             line_series.delete()
 
