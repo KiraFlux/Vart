@@ -97,27 +97,29 @@ class Mesh2D:
 class MeshRegistry(ObservableRegistry[Mesh2D]):
 
     def add_dummy(self) -> None:
-        self.add(
-            Mesh2D(
-                (
-                    Trajectory(
-                        (
-                            Vector2D(100, 100),
-                            Vector2D(100, -100),
-                            Vector2D(-100, -100),
-                        )
+        self.add(Mesh2D(
+            (
+                Trajectory(
+                    (
+                        Vector2D(100, 100),
+                        Vector2D(100, -100),
+                        Vector2D(-100, -100),
                     ),
-                    Trajectory(
-                        (
-                            Vector2D(-100, -100),
-                            Vector2D(-100, 100),
-                            Vector2D(100, 100),
-                        )
-                    ),
+                    tool_id=1,
+                    is_looped=False
                 ),
-                name="Dummy"
-            )
-        )
+                Trajectory(
+                    (
+                        Vector2D(-100, -100),
+                        Vector2D(-100, 100),
+                        Vector2D(100, 100),
+                    ),
+                    tool_id=2,
+                    is_looped=True
+                ),
+            ),
+            name="Dummy"
+        ))
 
     def add_clone(self, mesh: Mesh2D) -> None:
         self.add(mesh.clone())
