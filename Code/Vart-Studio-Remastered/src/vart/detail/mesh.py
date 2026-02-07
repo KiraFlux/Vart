@@ -1,7 +1,7 @@
 from typing import Sequence, Final, Iterable, AbstractSet, Callable
 
 from kf_dpg.misc.subject import Subject
-from kf_dpg.misc.vector import Vector2D
+from vart.detail.trajectory import Trajectory
 from vart.detail.transformation import Transformation2D
 from vart.misc.log import Logger
 

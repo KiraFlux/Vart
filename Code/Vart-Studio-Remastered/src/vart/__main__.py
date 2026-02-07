@@ -3,7 +3,8 @@ from kf_dpg.misc.vector import Vector2D
 
 vart.boot.attach_libs()
 
-from vart.detail.mesh import MeshRegistry, Mesh2D, Trajectory
+from vart.detail.mesh import MeshRegistry, Mesh2D
+from vart.detail.trajectory import Trajectory
 from kf_dpg.impl.containers import Window
 from vart.ui.app import VartApplication
 from vart.ui.views.config import ConfigView
