@@ -184,7 +184,7 @@ class WorkAreaView(CustomWidget):
             work_area.set_height(abs_value * 2)
 
         plot: Final = Plot()
-        edit_dialog: Final = WorkAreaEditDialog().with_font(Assets.default_font)
+        self._edit_dialog: Final = WorkAreaEditDialog().with_font(Assets.default_font)
 
         super().__init__(
             VBox()
@@ -204,7 +204,7 @@ class WorkAreaView(CustomWidget):
                     Button()
                     .with_width(-1)
                     .with_label("Рабочая область")
-                    .with_handler(lambda: edit_dialog.begin(work_area))
+                    .with_handler(lambda: self._edit_dialog.begin(work_area))
                 )
             )
             .add(

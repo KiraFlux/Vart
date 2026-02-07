@@ -19,7 +19,7 @@ class MeshEditDialog(EditDialog):
         return f"Edit: '{mesh.name}'"
 
     def __init__(self):
-        self._name: Final = TextInput().with_label("Наименование")
+        self._name: Final = TextInput()
         self._rotation: Final = IntInput(step_fast=15, step=5).with_interval((-360, 360))
         self._scale: Final = FloatInput2D("Масштаб", interval=(-10000, 10000), )
         self._translation: Final = FloatInput2D("Позиция", interval=(-10000, 10000), )
@@ -27,8 +27,8 @@ class MeshEditDialog(EditDialog):
         super().__init__(
             VBox()
             .with_width(160)
-            .add(self._name)
-            .add(self._rotation)
+            .add(self._name.with_label("Наименование"))
+            .add(self._rotation.with_label("Поворот"))
             .add(self._scale)
             .add(self._translation)
         )
@@ -99,7 +99,9 @@ class MeshView(CustomWidget):
 class MeshRegistryView(CustomWidget):
 
     def __init__(self, mesh_registry: MeshRegistry):
-        confirm_dialog: Final = ConfirmDialog().with_font(Assets.default_font)
+        self._confirm_dialog: Final = ConfirmDialog().with_font(Assets.default_font)
+        self._edit_dialog: Final = MeshEditDialog().with_font(Assets.default_font)
+
         mesh_list: Final = ChildWindow(scrollable_y=True)
 
         super().__init__(
@@ -116,7 +118,7 @@ class MeshRegistryView(CustomWidget):
                 .with_label("Очистить")
                 .with_width(-1)
                 .with_handler(
-                    lambda: confirm_dialog.begin(
+                    lambda: self._confirm_dialog.begin(
                         f"Удалить {len(mesh_registry.values())} эл.?",
                         on_confirm=mesh_registry.clear
                     )
@@ -126,15 +128,19 @@ class MeshRegistryView(CustomWidget):
         )
 
         def add_mesh_card(mesh: Mesh) -> None:
-            edit_dialog: Final = MeshEditDialog().with_font(Assets.default_font)
+
+            def open_edit_dialog():
+                self._edit_dialog.begin(mesh)
+
+            edit_button = Button().with_handler(open_edit_dialog).with_label("···")
 
             # noinspection PyTypeChecker
             mesh_list.add(MeshView(
                 mesh,
                 mesh_registry,
-                edit_dialog_button=edit_dialog.create_edit_button(mesh),
+                edit_dialog_button=edit_button,  # Передаем готовую кнопку
                 mesh_delete_button=Button().with_handler(
-                    lambda: confirm_dialog.begin(
+                    lambda: self._confirm_dialog.begin(
                         f"Удалить '{mesh.name}'?",
                         on_confirm=lambda: mesh_registry.remove(mesh)
                     )
