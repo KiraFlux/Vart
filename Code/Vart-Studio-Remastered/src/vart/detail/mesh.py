@@ -55,6 +55,16 @@ class Mesh:
 
         self._clone_count: int = 0
 
+    def extract_trajectory(self, trajectory: Trajectory) -> Mesh:
+        self.trajectories.remove(trajectory)
+        return Mesh(
+            trajectories=(
+                trajectory,
+            ),
+            name=f"{self._name} - T:{len(trajectory.vertices)}",
+            transformation=self.transformation.clone()
+        )
+
     def clone(self) -> Mesh:
         self._clone_count += 1
         return Mesh(
@@ -93,6 +103,9 @@ class Mesh:
 
 
 class MeshRegistry(ObservableRegistry[Mesh]):
+
+    def add_extracted_trajectory(self, mesh: Mesh, trajectory: Trajectory) -> None:
+        self.add(mesh.extract_trajectory(trajectory))
 
     def add_dummy(self) -> None:
         self.add(Mesh.make_dummy(f"Dummy:{len(self._items)}"))
