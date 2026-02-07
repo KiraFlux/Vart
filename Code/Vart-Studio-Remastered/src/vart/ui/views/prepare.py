@@ -131,7 +131,7 @@ class MeshList(CustomWidget):
                 Button()
                 .with_label("Добавить")
                 .with_width(-1)
-                .with_handler(lambda: self._mesh_registry.add(Mesh2D(())))
+                .with_handler(self._mesh_registry.add_dummy)
             )
             .add(
                 Button()

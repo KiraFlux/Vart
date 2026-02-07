@@ -1,6 +1,7 @@
 from typing import Final, Iterable, AbstractSet
 
 from kf_dpg.misc.subject import Subject
+from kf_dpg.misc.vector import Vector2D
 from vart.detail.trajectory import Trajectory
 from vart.detail.transformation import Transformation2D
 from vart.misc.log import Logger
@@ -94,6 +95,29 @@ class Mesh2D:
 
 
 class MeshRegistry(ObservableRegistry[Mesh2D]):
+
+    def add_dummy(self) -> None:
+        self.add(
+            Mesh2D(
+                (
+                    Trajectory(
+                        (
+                            Vector2D(100, 100),
+                            Vector2D(100, -100),
+                            Vector2D(-100, -100),
+                        )
+                    ),
+                    Trajectory(
+                        (
+                            Vector2D(-100, -100),
+                            Vector2D(-100, 100),
+                            Vector2D(100, 100),
+                        )
+                    ),
+                ),
+                name="Dummy"
+            )
+        )
 
     def add_clone(self, mesh: Mesh2D) -> None:
         self.add(mesh.clone())
