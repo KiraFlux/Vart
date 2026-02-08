@@ -2,8 +2,8 @@ from typing import Final, Iterable, Callable
 
 from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
-from vart.detail.trajectory import Trajectory
-from vart.detail.transformation import Transformation
+from vart.core.trajectory import Trajectory
+from vart.core.transformation import Transformation
 from vart.misc.observable import ObservableRegistry
 
 

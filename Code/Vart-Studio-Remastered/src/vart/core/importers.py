@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from vart.detail.mesh import Mesh
+from vart.core.mesh import Mesh
 
 
 class Importer(ABC):

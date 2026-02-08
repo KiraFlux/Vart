@@ -10,10 +10,10 @@ from kf_dpg.impl.containers import VBox, HBox
 from kf_dpg.misc.color import Color
 from kf_dpg.misc.vector import Vector2D
 from vart.assets import Assets
-from vart.detail.mesh import Mesh, MeshRegistry
-from vart.detail.trajectory import Trajectory
-from vart.detail.transformation import Transformation
-from vart.detail.workarea import WorkArea
+from vart.core.mesh import Mesh, MeshRegistry
+from vart.core.trajectory import Trajectory
+from vart.core.transformation import Transformation
+from vart.core.workarea import WorkArea
 
 
 class MeshPlotView(CustomWidget):

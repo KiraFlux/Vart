@@ -10,8 +10,8 @@ from kf_dpg.impl.misc import Spacer
 from kf_dpg.impl.text import Text
 from kf_dpg.misc.color import Color
 from vart.assets import Assets
-from vart.detail.mesh import Mesh, MeshRegistry
-from vart.detail.trajectory import Trajectory
+from vart.core.mesh import Mesh, MeshRegistry
+from vart.core.trajectory import Trajectory
 
 
 class TrajectoryView(CustomWidget):
@@ -85,31 +85,17 @@ class MeshEditDialog(EditDialog):
         self._trajectories_container: Final = TabBar()
         self._trajectory_views: Final = set[TrajectoryView]()
 
-        def make_title(text: str):
-            return (
-                VBox()
-                .add(Text(text).with_font(Assets.label_font))
-                .add(Spacer().with_height(20))
-            )
-
         super().__init__(
-            HBox()
+            TabBar()
             .add(
-                VBox()
-                .with_width(200)
-                .add(make_title("Меш"))
+                Tab("Меш")
                 .add(self._name.with_label("Наименование"))
                 .add(self._rotation.with_label("Поворот"))
                 .add(self._scale.with_label("Масштаб"))
                 .add(self._translation.with_label("Позиция"))
             )
             .add(
-                Spacer()
-                .with_width(100)
-            )
-            .add(
-                VBox()
-                .add(make_title("Траектории"))
+                Tab("Траектории")
                 .add(self._trajectories_container)
             )
         )

@@ -1,6 +1,6 @@
 from typing import Final
 
-from vart.detail.workarea import WorkArea
+from vart.core.workarea import WorkArea
 
 
 class Config:

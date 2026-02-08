@@ -1,12 +1,12 @@
 import vart.boot
-from vart.detail.config import Config
+from vart.core.config import Config
 
 vart.boot.attach_libs()
 
 from kf_dpg.impl.containers import Window, HBox
 
-from vart.detail.workarea import WorkArea
-from vart.detail.mesh import MeshRegistry
+from vart.core.workarea import WorkArea
+from vart.core.mesh import MeshRegistry
 from vart.ui.app import VartApplication
 from vart.ui.views.config import ConfigView
 from vart.ui.views.jornal import JornalView
