@@ -1,4 +1,5 @@
-from typing import Final, Iterable, Callable
+import math
+from typing import Final, Iterable
 
 from kf_dpg.misc.subject import Subject
 from kf_dpg.misc.vector import Vector2D
@@ -13,32 +14,6 @@ class Mesh:
     Группа траекторий.
     Имеет общую трансформацию
     """
-
-    @classmethod
-    def make_dummy(cls, name: str = "dummy"):
-        return cls(
-            (
-                Trajectory(
-                    (
-                        Vector2D(50, 50),
-                        Vector2D(100, -100),
-                        Vector2D(-50, -50),
-                    ),
-                    tool_id=1,
-                    is_looped=False
-                ),
-                Trajectory(
-                    (
-                        Vector2D(-100, -100),
-                        Vector2D(-100, 100),
-                        Vector2D(100, 100),
-                    ),
-                    tool_id=2,
-                    is_looped=True
-                ),
-            ),
-            name=name
-        )
 
     def __init__(
             self,
@@ -107,11 +82,56 @@ class MeshRegistry(ObservableRegistry[Mesh]):
     def add_extracted_trajectory(self, mesh: Mesh, trajectory: Trajectory) -> None:
         self.add(mesh.extract_trajectory(trajectory))
 
-    def add_dummy(self) -> None:
-        self.add(Mesh.make_dummy(f"Dummy:{len(self._items)}"))
-
     def add_clone(self, mesh: Mesh) -> None:
         self.add(mesh.clone())
+
+    def add_circle(
+            self,
+            segments: int,
+            radius: float,
+    ):
+        pi_segments = 2 * math.pi / segments
+
+        self.add(Mesh(
+            trajectories=(
+                Trajectory(
+                    tuple(
+                        Vector2D(radius * math.cos(angle), radius * math.sin(angle))
+                        for angle in map(
+                            lambda i: i * pi_segments,
+                            range(segments)
+                        )
+                    ),
+                    name=f"circle: {radius=} {segments=}",
+                    is_looped=True
+                ),
+            )
+        ))
+
+    def add_dummy(self):
+        self.add(Mesh(
+            (
+                Trajectory(
+                    (
+                        Vector2D(50, 50),
+                        Vector2D(100, -100),
+                        Vector2D(-50, -50),
+                    ),
+                    tool_id=1,
+                    is_looped=False
+                ),
+                Trajectory(
+                    (
+                        Vector2D(-100, -100),
+                        Vector2D(-100, 100),
+                        Vector2D(100, 100),
+                    ),
+                    tool_id=2,
+                    is_looped=True
+                ),
+            ),
+            name=f"Dummy:{len(self._items)}"
+        ))
 
     def remove(self, mesh: Mesh) -> None:
         mesh.trajectories.clear()

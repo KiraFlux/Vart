@@ -16,14 +16,17 @@ class Trajectory:
             self,
             vertices: Sequence[vec2f],
             *,
+            name: str = None,
             tool_id: int = 1,
             is_looped: bool = False
     ):
         self.on_vertices_changed: Final = Subject[Trajectory]()
+        self.on_name_changed: Final = Subject[str]()
         self.on_loop_changed: Final = Subject[bool]()
         self.on_tool_id_changed: Final = Subject[int]()
 
         self._vertices = vertices
+        self._name = name or f"{id(self)}"
         self._tool_id = tool_id
         self._loop = is_looped
 
@@ -44,6 +47,20 @@ class Trajectory:
             result_y.append(y)
 
         return result_x, result_y
+
+    @property
+    def name(self):
+        """Наименование (Отладка)"""
+        return self._name
+
+    def set_name(self, name: str):
+        if self._name != name:
+            self._name = name
+            self.on_name_changed.notify(name)
+
+    @name.setter
+    def name(self, n):
+        self.set_name(n)
 
     @property
     def vertices(self):

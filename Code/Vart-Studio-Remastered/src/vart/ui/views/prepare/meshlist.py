@@ -23,8 +23,10 @@ class TrajectoryView(CustomWidget):
         loop = CheckBox(_value=trajectory.loop)
         tool_id = IntInput(interval_min=0, interval_max=99)
 
+        tab = Tab()
+
         super().__init__(
-            Tab(f"({len(trajectory.vertices)})")
+            tab
             .add(
                 HBox()
                 .add(
@@ -61,8 +63,15 @@ class TrajectoryView(CustomWidget):
             )
         )
 
+        def update_name(new_name: str):
+            tab.set_label(new_name)
+
+        update_name(trajectory.name)
+        trajectory.on_name_changed.add_listener(update_name)
+
         def remove(__t: Trajectory) -> None:
             if __t is trajectory:
+                self.attach_delete_observer(lambda _: trajectory.on_name_changed.add_listener(update_name))
                 self.attach_delete_observer(lambda _: mesh.trajectories.on_remove.remove_listener(remove))
                 self.delete()
 
@@ -88,17 +97,23 @@ class MeshEditDialog(EditDialog):
         super().__init__(
             TabBar()
             .add(
-                Tab("Меш")
+                Tab()
+                .with_label("Меш")
                 .add(self._name.with_label("Наименование"))
                 .add(self._rotation.with_label("Поворот"))
                 .add(self._scale.with_label("Масштаб"))
                 .add(self._translation.with_label("Позиция"))
             )
             .add(
-                Tab("Траектории")
-                .add(self._trajectories_container)
+                Tab()
+                .with_label("Траектории")
+                .add(
+                    self._trajectories_container
+                )
             )
         )
+        self.set_width(1200)
+        self.set_height(800)
 
     def begin(self, mesh: Mesh) -> None:
         super().begin(mesh)

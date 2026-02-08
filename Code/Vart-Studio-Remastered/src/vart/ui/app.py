@@ -12,7 +12,8 @@ class VartApplication(App):
 
         for name, view in views:
             tab_bar.add(
-                Tab(name)
+                Tab()
+                .with_label(name)
                 .add(view)
             )
 
